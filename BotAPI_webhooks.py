@@ -40,7 +40,7 @@ async def disconnect_redis():
 
 
 @app.post("/api/bots/", summary="Creates a bot",
-          description="Allows the creation of certain BOT after it was created at BotFather", strict_slashes=False)
+          description="Allows the creation of certain BOT after it was created at BotFather")
 async def create_bot(bot_input: BotInput):
     """
     Creates a bot webhook setting, by default the status is settled to RUN
