@@ -1,6 +1,59 @@
-from utils.constants import telegram_receiver, telegram_sender, telegram_delete_webhook, telegram_webhook_info
+from utils.constants import telegram_receiver, telegram_sender, \
+    telegram_delete_webhook, telegram_webhook_info, \
+    CHECK_USER_UBIDOTS
 import requests_async as requests
+from utils.constants import redis_load, redis_save
+from bot_inout import BotUpdate
+from datetime import datetime
+import re
 import json
+
+
+# CREDITS from line 9:51 https://github.com/eternnoir/pyTelegramBotAPI/blob/master/telebot/util.py
+
+async def is_command(text):
+    """
+    Checks if `text` is a command. Telegram chat commands start with the '/' character.
+    :param text: Text to check.
+    :return: True if `text` is a command, else False.
+    """
+    if text is None:
+        return None
+    return text.startswith('/')
+
+
+async def extract_command(text):
+    """
+    Extracts the command from `text` (minus the '/') if `text` is a command (see is_command).
+    If `text` is not a command, this function returns None.
+    Examples:
+    extract_command('/help'): 'help'
+    extract_command('/help@BotName'): 'help'
+    extract_command('/search black eyed peas'): 'search'
+    extract_command('Good day to you'): None
+    :param text: String to extract the command from
+    :return: the command if `text` is a command (according to is_command), else None.
+    """
+    if text is None:
+        return None
+    return text.split()[0].split('@')[0][1:] if await is_command(text) else None
+
+
+async def extract_arguments(text):
+    """
+    Returns the argument after the command.
+
+    Examples:
+    extract_arguments("/get name"): 'name'
+    extract_arguments("/get"): ''
+    extract_arguments("/get@botName name"): 'name'
+
+    :param text: String to extract the arguments from a command
+    :return: the arguments if `text` is a command (according to is_command), else None.
+    """
+    regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)", re.IGNORECASE)
+    result = regexp.match(text)
+    return result.group(2) if await is_command(text) else None
 
 
 class TelegramBot:
@@ -33,14 +86,17 @@ class TelegramBot:
             data:str: JSON string of data
         """
 
-        message = data['message']
+        if data.get('message'):
+            message = data['message']
+        else:
+            message = data['edited_message']
 
         self.chat_id = message['chat']['id']
-        self.incoming_message_text = message['text'].lower()
+        self.incoming_message_text = message['text']
         self.first_name = message['from']['first_name']
         # self.last_name = message['from']['last_name']
 
-    async def action(self, token_bot: str) -> bool:
+    async def action(self, token_bot: str, dataplugin_id) -> bool:
         """
         Conditional actions based on set webhook data.
 
@@ -50,15 +106,56 @@ class TelegramBot:
         Returns:
             bool: True if the action was completed successfully else false
         """
+        # command description used in the "help" command
+        commands = {
+            'token': ' type it followed by your ubidots account\'s token',
+            'devices': 'List all devices at your account',
+            'variables': 'type it followed by the device label in order to retrieve the variables',
+        }
+
         success = None
 
         self.token_bot = token_bot
 
-        if self.incoming_message_text == '/hello':
-            self.outgoing_message_text = "Hello {} {}!".format(self.first_name, self.last_name)
+        command = await extract_command(self.incoming_message_text)
+
+        if command == 'start':
+            welcome_text = "Welcome {}! What can this bot do? \n"
+            welcome_text += "- List your Devices \n"
+            welcome_text += "- List your Variables \n"
+            welcome_text += "- Query the last value of your variables \n"
+            welcome_text += "To begin, type /token followed by your ubidots account\'s token. \n"
+            self.outgoing_message_text = welcome_text.format(self.first_name)
             success = await self.send_message()
 
-        if self.incoming_message_text == '/ping':
+        if command == 'help':
+            help_text = "The following commands are available: \n"
+            for key in commands:  # generate help text out of the commands dictionary defined above
+                help_text += "/" + key + ": "
+                help_text += commands[key] + "\n"
+            self.outgoing_message_text = help_text
+            success = await self.send_message()
+
+        if command == 'token':
+            args = await extract_arguments(self.incoming_message_text)
+            ubidots_token = args
+            req = await requests.get(CHECK_USER_UBIDOTS.format(ubidots_token))
+            if req.status_code == 200:
+                bot_data = await redis_load(dataplugin_id)
+                bot = BotUpdate(**bot_data)
+
+                bot.ubidots_token = ubidots_token
+                bot.updated_at = datetime.now()
+                bot_dict = await bot.to_dict()
+                await redis_save(dataplugin_id, bot_dict)
+                self.outgoing_message_text = "Thank You {}!, now you are logged in".format(self.first_name)
+            else:
+                self.outgoing_message_text = "Oops, something went wrong with the authentication {}," \
+                                             " the app returned {}" \
+                    .format(self.first_name, req.status_code)
+            success = await self.send_message()
+
+        if command == 'ping':
             self.outgoing_message_text = '🤙pong'
             success = await self.send_message()
 
@@ -144,4 +241,3 @@ class TelegramBot:
                        "Content": json.loads(res.content)}
 
         return webhook_res
-
