@@ -38,7 +38,7 @@ class TelegramBot:
         self.chat_id = message['chat']['id']
         self.incoming_message_text = message['text'].lower()
         self.first_name = message['from']['first_name']
-        self.last_name = message['from']['last_name']
+        # self.last_name = message['from']['last_name']
 
     async def action(self, token_bot: str) -> bool:
         """
