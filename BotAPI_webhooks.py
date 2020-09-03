@@ -39,8 +39,8 @@ async def disconnect_redis():
     await red.redis.await_closed()
 
 
-@app.post("/api/bots", summary="Creates a bot",
-          description="Allows the creation of certain BOT after it was created at BotFather")
+@app.post("/api/bots/", summary="Creates a bot",
+          description="Allows the creation of certain BOT after it was created at BotFather", strict_slashes=False)
 async def create_bot(bot_input: BotInput):
     """
     Creates a bot webhook setting, by default the status is settled to RUN
@@ -143,7 +143,7 @@ async def webhook_action(status_action, parameters):
 
 @app.put("/api/bots/", summary="Updates Bot info",
          description="Modify and Updates specific features of Bot, the main objective"
-                     "is giving the user the hability of STOPS and RUN the bot")
+                     "is giving the user the hability of STOPS and RUN the bot", strict_slashes=False)
 async def update_bot(form_update: FormUpdate):
     parameters = {}
 
@@ -167,5 +167,5 @@ async def update_bot(form_update: FormUpdate):
 async def delete_bot():
     pass
 
-#if __name__ == "__main__":
-#   uvicorn.run("BotAPI_webhooks:app", host="127.0.0.1", port=5000, log_level="info")
+if __name__ == "__main__":
+    uvicorn.run("BotAPI_webhooks:app", host="127.0.0.1", port=5000, log_level="info")
