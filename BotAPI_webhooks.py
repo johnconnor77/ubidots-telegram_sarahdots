@@ -2,6 +2,7 @@ import utils.redis_object as red
 from fastapi import FastAPI, Request
 from bot_inout import BotInput, BotOutput, BotUpdate, FormUpdate
 from telegram_bot import TelegramBot
+from utils.constants import redis_save, redis_load
 from utils.redis_object import redis_connection
 from datetime import datetime
 import uvicorn
@@ -20,17 +21,6 @@ app = FastAPI(title="UBIDOTS Telegram API for Bots",
 @app.on_event('startup')
 async def connect_redis():
     red.redis = await redis_connection()
-
-
-async def redis_save(key, value):
-    if key is not None and value is not None:
-        await red.redis.set(json.dumps(key), json.dumps(value))
-
-
-async def redis_load(key):
-    if key is None:
-        return None
-    return json.loads(await red.redis.get(key))
 
 
 @app.on_event('shutdown')
@@ -85,7 +75,7 @@ async def bot_webhook(request: Request, dataplugin_id: int):
     # Instance for parsing and making actions
     bot = TelegramBot()
     await bot.parse_webhook_data(data)
-    await bot.action(token_bot)
+    await bot.action(token_bot, dataplugin_id)
 
     return {"status": "OK"}
 
