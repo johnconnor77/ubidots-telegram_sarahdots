@@ -11,8 +11,8 @@ BASE_TELEGRAM_URL = 'https://api.telegram.org/bot{}'
 # TELEGRAM RECEIVER
 
 async def telegram_receiver(token, dataplugin_id):
-    NGROK_URL = 'https://6261189dbb18.ngrok.io'
-    LOCAL_WEBHOOK_ENDPOINT = NGROK_URL + '/api/bots/{}'.format(dataplugin_id)
+    HEROKU_URL = 'https://jconnor-ubidots-bots.herokuapp.com'
+    LOCAL_WEBHOOK_ENDPOINT = HEROKU_URL + '/api/bots/{}'.format(dataplugin_id)
     TELEGRAM_INIT_WEBHOOK_URL = BASE_TELEGRAM_URL.format(token) + '/setWebhook?url=' + LOCAL_WEBHOOK_ENDPOINT
     return TELEGRAM_INIT_WEBHOOK_URL
 
