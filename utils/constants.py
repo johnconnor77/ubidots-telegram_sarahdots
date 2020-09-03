@@ -3,8 +3,8 @@ import json
 
 # TODO: Move to environment variables
 
-TEST = True
-HEROKU = False
+TEST = False
+HEROKU = True
 TEST_REDIS_URL = 'redis://localhost'
 REDIS_URL = 'redis://redis-13775.c91.us-east-1-3.ec2.cloud.redislabs.com:13775'
 REDIS_DB = 0
