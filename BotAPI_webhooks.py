@@ -143,7 +143,7 @@ async def webhook_action(status_action, parameters):
 
 @app.put("/api/bots/", summary="Updates Bot info",
          description="Modify and Updates specific features of Bot, the main objective"
-                     "is giving the user the hability of STOPS and RUN the bot", strict_slashes=False)
+                     "is giving the user the hability of STOPS and RUN the bot")
 async def update_bot(form_update: FormUpdate):
     parameters = {}
 
