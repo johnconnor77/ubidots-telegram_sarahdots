@@ -155,6 +155,33 @@ class TelegramBot:
                     .format(self.first_name, req.status_code)
             success = await self.send_message()
 
+        if command == 'devices':
+            bot_data = await redis_load(dataplugin_id)
+            ubidots_token = bot_data.get("ubidots_token")
+            endpoint = "industrial.api.ubidots.com"
+            url = "https://{}/api/v2.0/devices/".format(endpoint)
+
+            headers = {"X-Auth-Token": ubidots_token}
+            req = await requests.get(url=url, headers=headers)
+            devices = []
+
+            req_dict = json.loads(req.text)
+            n_devices = req_dict.get('count')
+            devices_list = req_dict.get('results')
+
+            for device in range(0, n_devices, 1):
+                devices.append(devices_list[device].get('label'))
+
+            devices_msg = "Here is the list of your devices with their labels: \n "
+            counter = 0
+            for device in devices:
+                counter += 1
+                devices_msg += "/{}. {} \n".format(counter, device)
+
+            self.outgoing_message_text = devices_msg
+
+            success = await self.send_message()
+
         if command == 'ping':
             self.outgoing_message_text = '🤙pong'
             success = await self.send_message()
