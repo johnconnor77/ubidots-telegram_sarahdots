@@ -9,6 +9,7 @@ import uvicorn
 import json
 import logging
 
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -152,7 +153,7 @@ async def update_bot(form_update: FormUpdate):
     return {"Webhook Bot State": webhook_state, 'Bot Info Updated': bot_updated_data}
 
 
-@app.delete("/api/bots/", summary="Deletes Bot",
+@app.delete("/api/bots/{dataplugin_id}", summary="Deletes Bot",
             description="Delete the entire information that belongs to a given bot by its dataplugin_id")
 async def delete_bot():
     pass
