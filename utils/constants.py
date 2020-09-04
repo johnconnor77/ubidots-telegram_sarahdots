@@ -4,7 +4,7 @@ import json
 # TODO: Move to environment variables
 
 TEST = False
-HEROKU = True
+HEROKU = False
 TEST_REDIS_URL = 'redis://localhost'
 REDIS_URL = 'redis://redis-13775.c91.us-east-1-3.ec2.cloud.redislabs.com:13775'
 REDIS_DB = 0
@@ -37,7 +37,7 @@ async def telegram_receiver(token, dataplugin_id):
         HEROKU_URL = 'https://jconnor-ubidots-bots.herokuapp.com'
         WEBHOOK_ENDPOINT = HEROKU_URL + '/api/bots/{}'.format(dataplugin_id)
     else:
-        NGROK_URL = 'https://30c2197f50fa.ngrok.io'
+        NGROK_URL = 'https://a3433fac3182.ngrok.io'
         WEBHOOK_ENDPOINT = NGROK_URL + '/api/bots/{}'.format(dataplugin_id)
 
     TELEGRAM_INIT_WEBHOOK_URL = BASE_TELEGRAM_URL.format(token) + '/setWebhook?url=' + WEBHOOK_ENDPOINT
