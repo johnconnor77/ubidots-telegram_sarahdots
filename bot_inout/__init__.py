@@ -97,7 +97,6 @@ class BotUpdate:
             self.status = ""
             self.owner_id = 0
             self.token_bot = ""
-            self.status = ""
             self.ubidots_token = ""
 
     async def to_dict(self) -> object:
