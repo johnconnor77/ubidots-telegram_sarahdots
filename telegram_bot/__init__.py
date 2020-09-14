@@ -9,11 +9,10 @@ import re
 import json
 
 
-# CREDITS from line 9:51 https://github.com/eternnoir/pyTelegramBotAPI/blob/master/telebot/util.py
-
 async def is_command(text):
     """
     Checks if `text` is a command. Telegram chat commands start with the '/' character.
+    
     :param text: Text to check.
     :return: True if `text` is a command, else False.
     """
@@ -26,11 +25,13 @@ async def extract_command(text):
     """
     Extracts the command from `text` (minus the '/') if `text` is a command (see is_command).
     If `text` is not a command, this function returns None.
+    
     Examples:
     extract_command('/help'): 'help'
     extract_command('/help@BotName'): 'help'
     extract_command('/search black eyed peas'): 'search'
     extract_command('Good day to you'): None
+    
     :param text: String to extract the command from
     :return: the command if `text` is a command (according to is_command), else None.
     """
@@ -43,10 +44,11 @@ async def extract_arguments(text):
     """
     Returns the argument after the command.
 
-    Examples:
-    extract_arguments("/get name"): 'name'
-    extract_arguments("/get"): ''
-    extract_arguments("/get@botName name"): 'name'
+        Examples:
+        extract_arguments("/get name"): 'name'
+        extract_arguments("/get"): ''
+    
+        extract_arguments("/get@botName name"): 'name'
 
     :param text: String to extract the arguments from a command
     :return: the arguments if `text` is a command (according to is_command), else None.
@@ -68,22 +70,24 @@ class TelegramBot:
             text:str : Text of Telegram chat
             first_name :str: First name of the user who sent the message
             last_name :str: Last name of the user who sent the message
+            token_bot: str: Bot Token that comes from bot father
+            incoming_message_text: str: text that comes from user or non-user interacting with bot
+            outgoing_message: str: text that's going to be answer for replying at certaing command or NLP
         """
 
         self.chat_id = None
         self.text = None
         self.first_name = None
         self.last_name = None
-        self.incoming_message_text = None
         self.token_bot = None
+        self.incoming_message_text = None
         self.outgoing_message_text = None
 
     async def parse_webhook_data(self, data: str):
         """
         Parses Telegram JSON request from webhook and sets fields for conditional actions
 
-        Args:
-            data:str: JSON string of data
+        :param data:str: JSON string of data
         """
 
         if data.get('message'):
@@ -100,9 +104,9 @@ class TelegramBot:
         """
         Conditional actions based on set webhook data.
 
-        Args:
-            token_bot: Token that comes from bot father creation
-
+        :param token_bot: Token that comes from bot father creation
+        :param dataplugin_id: unique identifier for plugin and telegram bot relationship
+        
         Returns:
             bool: True if the action was completed successfully else false
         """
@@ -176,7 +180,7 @@ class TelegramBot:
                 for device in range(0, n_devices, 1):
                     devices.append(devices_list[device].get('label'))
 
-                devices_msg = "Here is the list of your devices with their labels: \n "
+                devices_msg = 'Here is the list of your devices with their labels: \n '
                 counter = 0
                 for device in devices:
                     counter += 1
@@ -205,7 +209,7 @@ class TelegramBot:
         return True if res.status_code == 200 else False
 
     @staticmethod
-    async def webhook_default():
+    async def webhook_default() -> object:
         raise ValueError("Non valid Action")
 
     @staticmethod
@@ -213,7 +217,6 @@ class TelegramBot:
         """
         Initializes the webhook
 
-        Args:
             parameters.token: str: Bot Token from BotFather
             parameters.dataplugin_id: id given a
         """

@@ -4,7 +4,7 @@ from datetime import datetime
 
 class BotInput(BaseModel):
     """
-    Information that comes after setting the dataplugin and Bot creation with BotFather
+        Information that comes after setting the dataplugin and Bot creation with BotFather
     """
     dataplugin_id: int
     owner_id: int
@@ -22,7 +22,7 @@ class BotInput(BaseModel):
             raise ValueError('Token is invalid!, verify the entire structure')
         return v
 
-    async def to_dict(self):
+    async def to_dict(self) -> object:
         """ This method returns a dict representation of the instance """
         new_dict = {}
         for key, item in self.__dict__.items():
@@ -35,6 +35,7 @@ class BotInput(BaseModel):
 
 class FormUpdate(BaseModel):
     """
+        Instantiates the object as the information that comes from updating bot **status**
     """
     dataplugin_id: int
     status: str
@@ -42,7 +43,7 @@ class FormUpdate(BaseModel):
 
 class BotOutput:
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, args: object, kwargs: object) -> object:
         """Instantiates the attributes of Output data of Bot"""
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
@@ -64,7 +65,7 @@ class BotOutput:
             self.token_bot = ""
             self.status = ""
 
-    async def to_dict(self):
+    async def to_dict(self) -> object:
         """ This method returns a dict representation of the instance """
         new_dict = {}
         for key, item in self.__dict__.items():
@@ -77,7 +78,7 @@ class BotOutput:
 
 class BotUpdate:
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, args: object, kwargs: object) -> object:
         """Instantiates the attributes of Updated data of Bot"""
         if args is not None and len(args) > 0:
             pass
@@ -99,7 +100,7 @@ class BotUpdate:
             self.status = ""
             self.ubidots_token = ""
 
-    async def to_dict(self):
+    async def to_dict(self) -> object:
         """ This method returns a dict representation of the instance """
         new_dict = {}
         for key, item in self.__dict__.items():

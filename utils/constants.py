@@ -15,12 +15,17 @@ CHECK_USER_UBIDOTS = 'http://industrial.api.ubidots.com/api/v1.6/user_check/?tok
 
 # REDIS AUX FUNCTIONS
 
-async def redis_save(key, value):
+async def redis_save(key: object, value: object) -> object:
     if key is not None and value is not None:
         await red.redis.set(json.dumps(key), json.dumps(value))
 
 
-async def redis_load(key):
+async def redis_load(key: object) -> object:
+    """
+    :param key: Our redis Key that stores each element by its dataplugin_id
+
+    :return: object
+    """
     if key is None:
         return None
     value = await red.redis.get(key)
@@ -32,6 +37,12 @@ async def redis_load(key):
 # TELEGRAM RECEIVER
 
 async def telegram_receiver(token, dataplugin_id):
+    """
+
+    :param token: str:
+    :param dataplugin_id:
+    :return:
+    """
 
     if HEROKU:
         HEROKU_URL = 'https://jconnor-ubidots-bots.herokuapp.com'

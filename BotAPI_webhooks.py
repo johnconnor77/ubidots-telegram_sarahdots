@@ -6,7 +6,6 @@ from utils.constants import redis_save, redis_load
 from utils.redis_object import redis_connection
 from datetime import datetime
 import uvicorn
-import json
 import logging
 
 
@@ -37,6 +36,7 @@ async def create_bot(bot_input: BotInput):
     Creates a bot webhook setting, by default the status is settled to RUN
         :param bot_input: Class that represent the correct structure for Bot Creation
         :return: Output Object that represents the Bot Created
+        @type bot_input: object
     """
     # Setting Webhook
     parameters = {'token_bot': bot_input.token_bot, 'dataplugin_id': bot_input.dataplugin_id}
@@ -132,7 +132,7 @@ async def webhook_action(status_action, parameters):
     return webhook_state
 
 
-@app.put("/api/bots/", summary="Updates Bot info",
+@app.put('/api/bots/', summary='Updates Bot info',
          description="Modify and Updates specific features of Bot, the main objective"
                      "is giving the user the hability of STOPS and RUN the bot")
 async def update_bot(form_update: FormUpdate):
@@ -153,7 +153,7 @@ async def update_bot(form_update: FormUpdate):
     return {"Webhook Bot State": webhook_state, 'Bot Info Updated': bot_updated_data}
 
 
-@app.delete("/api/bots/{dataplugin_id}", summary="Deletes Bot",
+@app.delete('/api/bots/{dataplugin_id}', summary="Deletes Bot",
             description="Delete the entire information that belongs to a given bot by its dataplugin_id")
 async def delete_bot():
     pass
